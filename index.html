@@ -3,564 +3,264 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Studium Workflow</title>
+<title>Lecture Loop</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500&display=swap');
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #0d0e11;
-    --surface: #14161b;
-    --border: #1f222a;
-    --border-bright: #2a2e3a;
-    --text: #c8ccd8;
-    --text-dim: #5a5f72;
-    --text-bright: #edf0f7;
-    --accent-a: #4f8ef7;
-    --accent-b: #a78bfa;
-    --accent-c: #34d399;
-    --accent-d: #fb923c;
-    --tag-a: rgba(79,142,247,.12);
-    --tag-b: rgba(167,139,250,.12);
-    --tag-c: rgba(52,211,153,.12);
-    --tag-d: rgba(251,146,60,.12);
-    --radius: 10px;
-    --gap: 2px;
+    --bg: #f5f2eb;
+    --surface: #ede9e0;
+    --border: #d8d2c4;
+    --text: #2a2520;
+    --text-mid: #7a7168;
+    --text-dim: #b0a898;
+    --ink: #1a1612;
   }
 
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: 'DM Mono', monospace;
+    font-family: 'Geist Mono', monospace;
     font-size: 13px;
     line-height: 1.6;
     min-height: 100vh;
-    padding: 40px 20px 80px;
+    padding: 60px 24px 100px;
   }
 
-  .wrap { max-width: 860px; margin: 0 auto; }
-
-  /* ── HEADER ── */
-  header {
-    margin-bottom: 48px;
-    border-bottom: 1px solid var(--border-bright);
-    padding-bottom: 28px;
-  }
-  .eyebrow {
-    font-size: 10px;
-    letter-spacing: .18em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-bottom: 10px;
-  }
-  h1 {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: clamp(28px, 5vw, 46px);
-    color: var(--text-bright);
-    line-height: 1.05;
-    letter-spacing: -.02em;
-    margin-bottom: 12px;
-  }
-  h1 span { color: var(--accent-a); }
-  .subtitle {
-    color: var(--text-dim);
-    font-size: 12px;
-    max-width: 540px;
-  }
-
-  /* ── LEGEND ── */
-  .legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 20px;
-    margin-bottom: 36px;
-    padding: 14px 16px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-  }
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    font-size: 11px;
-    color: var(--text-dim);
-  }
-  .dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-
-  /* ── PHASES ── */
-  .phase-label {
-    font-family: 'Syne', sans-serif;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: .15em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin: 32px 0 10px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .phase-label::after {
+  body::before {
     content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+    opacity: .5;
   }
 
-  /* ── LOOP GRID ── */
-  .loop { display: flex; flex-direction: column; gap: var(--gap); }
+  .wrap { max-width: 680px; margin: 0 auto; }
+
+  /* PROGRESS */
+  .progress-wrap { margin-bottom: 40px; }
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .progress-label {
+    font-size: 10px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .progress-count { font-size: 10px; color: var(--text-dim); }
+  .progress-track {
+    width: 100%;
+    height: 2px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--ink);
+    border-radius: 2px;
+    transition: width .35s ease;
+    width: 0%;
+  }
+  .reset-btn {
+    margin-top: 10px;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .08em;
+    color: var(--text-dim);
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: border-color .15s, color .15s;
+  }
+  .reset-btn:hover { border-color: var(--text-mid); color: var(--text-mid); }
+
+  /* PHASE */
+  .phase {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin: 36px 0 14px;
+  }
+  .phase:first-of-type { margin-top: 0; }
+  .phase-name {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--text-mid);
+    white-space: nowrap;
+  }
+  .phase-rule { flex: 1; height: 1px; background: var(--border); }
+
+  /* STEPS */
+  .steps { display: flex; flex-direction: column; gap: 3px; }
 
   .step {
     display: grid;
-    grid-template-columns: 36px 1fr auto;
-    align-items: start;
-    gap: 0;
-    background: var(--surface);
+    grid-template-columns: 26px 1fr 44px;
     border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border-radius: 6px;
+    background: #faf8f4;
     overflow: hidden;
-    transition: border-color .18s, background .18s;
-    position: relative;
+    cursor: pointer;
+    transition: background .15s;
+    user-select: none;
   }
-  .step:hover { border-color: var(--border-bright); background: #171921; }
+  .step:hover { background: #fff; }
+  .step.done { background: var(--surface); }
+  .step.done .step-title {
+    color: var(--text-dim);
+    text-decoration: line-through;
+    text-decoration-color: var(--border);
+  }
+  .step.done .step-n { color: var(--border); background: #e8e4da; }
 
-  /* number gutter */
-  .step-num {
+  .step-n {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 14px 0;
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 11px;
+    font-size: 10px;
     color: var(--text-dim);
     border-right: 1px solid var(--border);
-    background: rgba(255,255,255,.01);
+    background: var(--surface);
     align-self: stretch;
+    letter-spacing: .04em;
+    transition: color .2s, background .2s;
   }
 
-  /* body */
-  .step-body {
-    padding: 12px 16px;
-    min-width: 0;
-  }
+  .step-body { padding: 11px 15px; min-width: 0; }
+
   .step-title {
-    font-family: 'Syne', sans-serif;
-    font-weight: 600;
-    font-size: 13px;
-    color: var(--text-bright);
-    margin-bottom: 3px;
-  }
-  .step-desc {
-    color: var(--text-dim);
-    font-size: 11.5px;
-    line-height: 1.55;
-  }
-  .step-desc strong { color: var(--text); font-weight: 400; }
-
-  /* tags + time */
-  .step-meta {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 5px;
-    padding: 12px 14px 12px 8px;
-  }
-  .tag {
-    font-size: 9.5px;
-    letter-spacing: .06em;
-    text-transform: uppercase;
-    padding: 2px 7px;
-    border-radius: 4px;
-    white-space: nowrap;
-  }
-  .tag-a { background: var(--tag-a); color: var(--accent-a); }
-  .tag-b { background: var(--tag-b); color: var(--accent-b); }
-  .tag-c { background: var(--tag-c); color: var(--accent-c); }
-  .tag-d { background: var(--tag-d); color: var(--accent-d); }
-
-  .time {
-    font-size: 10px;
-    color: var(--text-dim);
-    white-space: nowrap;
-    font-style: italic;
+    font-family: 'Geist Mono', monospace;
+    font-weight: 500;
+    font-size: 12.5px;
+    color: var(--ink);
+    transition: color .2s;
   }
 
-  /* ── CONNECTOR ── */
-  .connector {
-    height: 18px;
+  .step-check {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--border-bright);
-    font-size: 10px;
-    letter-spacing: .1em;
-    gap: 6px;
+    border-left: 1px solid var(--border);
   }
-  .connector-line {
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-    max-width: 60px;
-  }
-
-  /* ── MODULE TRIGGER ── */
-  .module-trigger {
-    margin: 12px 0;
-    padding: 12px 16px;
-    border: 1px dashed var(--border-bright);
-    border-radius: var(--radius);
-    background: rgba(167,139,250,.04);
+  .check-box {
+    width: 14px; height: 14px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background: var(--bg);
     display: flex;
     align-items: center;
-    gap: 12px;
-    font-size: 11px;
-    color: var(--text-dim);
+    justify-content: center;
+    transition: background .15s, border-color .15s;
   }
-  .trigger-icon {
-    font-size: 14px;
-    flex-shrink: 0;
-  }
-  .module-trigger strong { color: var(--accent-b); font-weight: 400; }
+  .step.done .check-box { background: var(--ink); border-color: var(--ink); }
+  .check-box svg { opacity: 0; transition: opacity .15s; }
+  .step.done .check-box svg { opacity: 1; }
 
-  /* ── REPEAT BLOCK ── */
-  .repeat-block {
-    margin-top: 28px;
-    padding: 16px 18px;
-    border: 1px solid var(--border-bright);
-    border-radius: var(--radius);
-    background: rgba(52,211,153,.03);
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px 24px;
-  }
-  .repeat-block h3 {
-    font-family: 'Syne', sans-serif;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: var(--accent-c);
-    margin-bottom: 8px;
-    grid-column: 1/-1;
-  }
-  .repeat-item {
-    font-size: 11.5px;
-    color: var(--text-dim);
-    line-height: 1.55;
-    padding-left: 10px;
-    border-left: 2px solid var(--accent-c);
-  }
-  .repeat-item strong { color: var(--text); font-weight: 400; }
-
-  /* ── TIME SUMMARY ── */
-  .time-bar {
-    margin-top: 36px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 8px;
-  }
-  .time-cell {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 12px 14px;
-    text-align: center;
-  }
-  .time-cell .val {
-    font-family: 'Syne', sans-serif;
-    font-size: 22px;
-    font-weight: 800;
-    color: var(--text-bright);
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-  .time-cell .lbl {
-    font-size: 10px;
-    color: var(--text-dim);
-    letter-spacing: .06em;
-  }
-  .time-cell.accent-a { border-color: rgba(79,142,247,.3); }
-  .time-cell.accent-b { border-color: rgba(167,139,250,.3); }
-  .time-cell.accent-c { border-color: rgba(52,211,153,.3); }
-  .time-cell.accent-d { border-color: rgba(251,146,60,.3); }
-
-  @media (max-width: 560px) {
-    .step { grid-template-columns: 30px 1fr; }
-    .step-meta { display: none; }
-    .repeat-block { grid-template-columns: 1fr; }
+  @media (max-width: 520px) {
+    .step { grid-template-columns: 24px 1fr 40px; }
   }
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <header>
-    <p class="eyebrow">Studium Workflow · Kombinierter Loop</p>
-    <h1>Pro-<span>Lecture</span> + Pro-Modul</h1>
-    <p class="subtitle">Ein einziger Referenz-Loop — von der frischen Vorlesung bis zur Klausurvorbereitung. Chronologisch abarbeitbar, kursübergreifend.</p>
-  </header>
-
-  <div class="legend">
-    <div class="legend-item"><span class="dot" style="background:var(--accent-a)"></span>Claude</div>
-    <div class="legend-item"><span class="dot" style="background:var(--accent-b)"></span>NotebookLM</div>
-    <div class="legend-item"><span class="dot" style="background:var(--accent-c)"></span>Eigenarbeit</div>
-    <div class="legend-item"><span class="dot" style="background:var(--accent-d)"></span>Optional</div>
+  <div class="progress-wrap">
+    <div class="progress-meta">
+      <span class="progress-label">Fortschritt</span>
+      <span class="progress-count" id="prog-count">0 / 11</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="prog-fill"></div>
+    </div>
+    <button class="reset-btn" id="reset-btn">Loop zurücksetzen</button>
   </div>
 
-  <!-- ── SESSION A ── -->
-  <p class="phase-label">Session A &nbsp;·&nbsp; Priming &amp; Deep Reading</p>
-  <div class="loop">
-
-    <div class="step">
-      <div class="step-num">01</div>
-      <div class="step-body">
-        <div class="step-title">Folien archivieren</div>
-        <div class="step-desc">PDF sofort in <strong>[kurs]/[nn]_lecture_[nn]/folien.pdf</strong> ablegen. Nicht aufschieben.</div>
-      </div>
-      <div class="step-meta"><span class="tag tag-c">Datei</span><span class="time">2 min</span></div>
-    </div>
-
-    <div class="step">
-      <div class="step-num">02</div>
-      <div class="step-body">
-        <div class="step-title">Folien in NotebookLM hochladen</div>
-        <div class="step-desc">Kurs-Notebook öffnen → neue Quelle → Titel: <strong>Lecture 0X: [Thema]</strong></div>
-      </div>
-      <div class="step-meta"><span class="tag tag-b">NbLM</span><span class="time">3 min</span></div>
-    </div>
-
-    <div class="step">
-      <div class="step-num">03</div>
-      <div class="step-body">
-        <div class="step-title">Audio Overview generieren + passiv hören</div>
-        <div class="step-desc">Generation starten, dann Kopfhörer auf beim Kochen/Pendeln/Spazieren. Ziel: grobe Topologie aufnehmen, nicht aktiv lernen.</div>
-      </div>
-      <div class="step-meta"><span class="tag tag-b">NbLM</span><span class="time">~15 min</span></div>
-    </div>
-
-    <div class="step">
-      <div class="step-num">04</div>
-      <div class="step-body">
-        <div class="step-title">Folien selbst durchlesen</div>
-        <div class="step-desc">Einmal, ohne Unterbrechung. Kein Notizen-Machen. Mental markieren: was klar? Was stockt? → Priorität für Schritt 07.</div>
-      </div>
-      <div class="step-meta"><span class="tag tag-c">Lesen</span><span class="time">20–25 min</span></div>
-    </div>
-
+  <!-- I -->
+  <div class="phase"><span class="phase-name">I. Priming</span><div class="phase-rule"></div></div>
+  <div class="steps">
+    <div class="step" data-id="1"><div class="step-n">1</div><div class="step-body"><div class="step-title">Audio Brief</div></div><div class="step-check"><div class="check-box"><svg width="8" height="6" viewBox="0 0 8 6" fill="none"><polyline points="1,3 3,5 7,1" stroke="#f5f2eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></div>
+    <div class="step" data-id="2"><div class="step-n">2</div><div class="step-body"><div class="step-title">Video Explainer</div></div><div class="step-check"><div class="check-box"><svg width="8" height="6" viewBox="0 0 8 6" fill="none"><polyline points="1,3 3,5 7,1" stroke="#f5f2eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></div>
+    <div class="step" data-id="3"><div class="step-n">3</div><div class="step-body"><div class="step-title">Vorlesungsfolien lesen</div></div><div class="step-check"><div class="check-box"><svg width="8" height="6" viewBox="0 0 8 6" fill="none"><polyline points="1,3 3,5 7,1" stroke="#f5f2eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></div>
   </div>
 
-  <!-- ── SESSION B ── -->
-  <p class="phase-label">Session B &nbsp;·&nbsp; Materialerstellung</p>
-  <div class="loop">
-
-    <div class="step">
-      <div class="step-num">05</div>
-      <div class="step-body">
-        <div class="step-title">Skript-Prompt wählen</div>
-        <div class="step-desc"><strong>Annotated Slides</strong> → Programmierkurse (Code-Reihenfolge matters) &nbsp;|&nbsp; <strong>Lehrbuch</strong> → BWL &nbsp;|&nbsp; <strong>Situativ</strong> → WI (Code = Slides, Prosa = Lehrbuch)</div>
-      </div>
-      <div class="step-meta"><span class="tag tag-c">Entscheidung</span><span class="time">1 min</span></div>
-    </div>
-
-    <div class="step">
-      <div class="step-num">06</div>
-      <div class="step-body">
-        <div class="step-title">Skript erstellen in Claude</div>
-        <div class="step-desc">Meta-Prompt → Skript-Prompt (Variablen ausfüllen) → Folien-PDF attachen → senden. Output: <strong>notes.md</strong>. Review-Notes am Ende checken.</div>
-      </div>
-      <div class="step-meta"><span class="tag tag-a">Claude</span><span class="time">15–20 min</span></div>
-    </div>
-
-    <div class="step">
-      <div class="step-num">07</div>
-      <div class="step-body">
-        <div class="step-title">Glossar erstellen in Claude</div>
-        <div class="step-desc">Neue Session: Meta-Prompt → Glossar-Prompt → Folien-PDF attachen → senden. Output: <strong>glossar.md</strong>. Fehlende Begriffe per Follow-up ergänzen.</div>
-      </div>
-      <div class="step-meta"><span class="tag tag-a">Claude</span><span class="time">10–15 min</span></div>
-    </div>
-
-    <div class="step">
-      <div class="step-num">08</div>
-      <div class="step-body">
-        <div class="step-title">Code ausführbar machen</div>
-        <div class="step-desc">Code-Blöcke aus notes.md → einzelne <strong>.java-Dateien</strong> im code/-Unterordner → einmal kompilieren &amp; ausführen. Passives Lesen schwächer als einmal laufen lassen.</div>
-      </div>
-      <div class="step-meta"><span class="tag tag-d">Optional</span><span class="time">5–15 min</span></div>
-    </div>
-
-    <div class="step">
-      <div class="step-num">09</div>
-      <div class="step-body">
-        <div class="step-title">Notes + Glossar in NotebookLM hochladen</div>
-        <div class="step-desc">Kurs-Notebook → zwei neue Quellen: <strong>Lecture 0X: Notes</strong> und <strong>Lecture 0X: Glossar</strong>. Quellen-Pyramide jetzt vollständig.</div>
-      </div>
-      <div class="step-meta"><span class="tag tag-b">NbLM</span><span class="time">3 min</span></div>
-    </div>
-
+  <!-- II -->
+  <div class="phase"><span class="phase-name">II. Materialerstellung</span><div class="phase-rule"></div></div>
+  <div class="steps">
+    <div class="step" data-id="4"><div class="step-n">4</div><div class="step-body"><div class="step-title">Skript erstellen</div></div><div class="step-check"><div class="check-box"><svg width="8" height="6" viewBox="0 0 8 6" fill="none"><polyline points="1,3 3,5 7,1" stroke="#f5f2eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></div>
+    <div class="step" data-id="5"><div class="step-n">5</div><div class="step-body"><div class="step-title">Glossar erstellen</div></div><div class="step-check"><div class="check-box"><svg width="8" height="6" viewBox="0 0 8 6" fill="none"><polyline points="1,3 3,5 7,1" stroke="#f5f2eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></div>
+    <div class="step" data-id="6"><div class="step-n">6</div><div class="step-body"><div class="step-title">Flashcards generieren</div></div><div class="step-check"><div class="check-box"><svg width="8" height="6" viewBox="0 0 8 6" fill="none"><polyline points="1,3 3,5 7,1" stroke="#f5f2eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></div>
+    <div class="step" data-id="7"><div class="step-n">7</div><div class="step-body"><div class="step-title">Code ausführbar machen</div></div><div class="step-check"><div class="check-box"><svg width="8" height="6" viewBox="0 0 8 6" fill="none"><polyline points="1,3 3,5 7,1" stroke="#f5f2eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></div>
   </div>
 
-  <!-- ── SESSION C ── -->
-  <p class="phase-label">Session C &nbsp;·&nbsp; Verification &nbsp;<span style="color:var(--accent-c);font-size:10px;letter-spacing:.04em">— einen Tag später</span></p>
-  <div class="loop">
-
-    <div class="step">
-      <div class="step-num">10</div>
-      <div class="step-body">
-        <div class="step-title">NotebookLM-Quiz durcharbeiten</div>
-        <div class="step-desc">Quiz auf Lecture-Quellen starten. Antworten <strong>vor</strong> der Lösung abgeben. Falsche/unsichere → <strong>review/quiz_log.md</strong> mit Datum, Frage, Antwort, Warum-falsch.</div>
-      </div>
-      <div class="step-meta"><span class="tag tag-b">NbLM</span><span class="time">15–20 min</span></div>
-    </div>
-
-    <div class="step">
-      <div class="step-num">11</div>
-      <div class="step-body">
-        <div class="step-title">Feynman-Check</div>
-        <div class="step-desc">Unsicherstes Konzept wählen (aus Schritt 04 oder Quiz). Neue Claude-Session: Meta → Feynman-Prompt → Konzept in eigenen Worten in &lt;meine_erklärung&gt; ohne Folien → Folien + notes.md attachen → senden. Lücken in <strong>review/feynman_log.md</strong>.</div>
-      </div>
-      <div class="step-meta"><span class="tag tag-a">Claude</span><span class="time">10–15 min</span></div>
-    </div>
-
-    <div class="step">
-      <div class="step-num">12</div>
-      <div class="step-body">
-        <div class="step-title">Lecture-Abschluss-Check</div>
-        <div class="step-desc">Drei Fragen: notes.md + glossar.md vorhanden? In NotebookLM hochgeladen? Quiz- oder Feynman-Log-Eintrag existiert? → Wenn ja: Lecture ✓</div>
-      </div>
-      <div class="step-meta"><span class="tag tag-c">Check</span><span class="time">2 min</span></div>
-    </div>
-
+  <!-- III -->
+  <div class="phase"><span class="phase-name">III. Synthese</span><div class="phase-rule"></div></div>
+  <div class="steps">
+    <div class="step" data-id="8"><div class="step-n">8</div><div class="step-body"><div class="step-title">Briefing Doc</div></div><div class="step-check"><div class="check-box"><svg width="8" height="6" viewBox="0 0 8 6" fill="none"><polyline points="1,3 3,5 7,1" stroke="#f5f2eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></div>
+    <div class="step" data-id="9"><div class="step-n">9</div><div class="step-body"><div class="step-title">Skript &amp; Glossar lesen</div></div><div class="step-check"><div class="check-box"><svg width="8" height="6" viewBox="0 0 8 6" fill="none"><polyline points="1,3 3,5 7,1" stroke="#f5f2eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></div>
   </div>
 
-  <!-- TRIGGER -->
-  <div class="module-trigger">
-    <span class="trigger-icon">◈</span>
-    <div>Nach <strong>3–5 Lectures zum selben Oberthema</strong> startet automatisch der Pro-Modul-Loop. Typischer Abstand: alle 3–4 Wochen. Nicht erst am Semesterende.</div>
-  </div>
-
-  <!-- ── SESSION D ── -->
-  <p class="phase-label">Session D &nbsp;·&nbsp; Konsolidierung</p>
-  <div class="loop">
-
-    <div class="step">
-      <div class="step-num">13</div>
-      <div class="step-body">
-        <div class="step-title">Master-Glossar bauen</div>
-        <div class="step-desc">Claude: Meta → Glossar-Prompt (Topic = Modul-Name) → alle Folien-PDFs des Moduls + alle lecture-glossar.md attachen → Zusatz: "Konsolidiere, entferne Redundanzen, ergänze Cross-References." Output: <strong>_modul/master_glossar_[modul].md</strong></div>
-      </div>
-      <div class="step-meta"><span class="tag tag-a">Claude</span><span class="time">30 min</span></div>
-    </div>
-
-    <div class="step">
-      <div class="step-num">14</div>
-      <div class="step-body">
-        <div class="step-title">Zusatzquellen-Abgleich</div>
-        <div class="step-desc">Pro externer Quelle: Meta → Zusatzquellen-Prompt → Modul-Notes + Quelle attachen → Verdict (lesen/überfliegen/skippen) + Ergänzungsvorschläge. "Lesen"-Verdicts kommen in <strong>_zusatzquellen/</strong>.</div>
-      </div>
-      <div class="step-meta"><span class="tag tag-d">Optional</span><span class="time">30–45 min</span></div>
-    </div>
-
-    <div class="step">
-      <div class="step-num">15</div>
-      <div class="step-body">
-        <div class="step-title">NotebookLM Briefing + Flashcards</div>
-        <div class="step-desc">Briefing Doc auf das gesamte Modul generieren → als <strong>_modul/notebooklm_briefing_[modul].md</strong> speichern. Flashcards generieren → direkt drillen oder in Anki exportieren.</div>
-      </div>
-      <div class="step-meta"><span class="tag tag-b">NbLM</span><span class="time">15 min + Wartezeit</span></div>
-    </div>
-
-  </div>
-
-  <!-- ── SESSION E ── -->
-  <p class="phase-label">Session E &nbsp;·&nbsp; Anwendung &amp; Fehleranalyse &nbsp;<span style="color:var(--accent-c);font-size:10px;letter-spacing:.04em">— einige Tage nach D</span></p>
-  <div class="loop">
-
-    <div class="step">
-      <div class="step-num">16</div>
-      <div class="step-body">
-        <div class="step-title">Problem-Set generieren</div>
-        <div class="step-desc">Claude: Meta → Problem-Generation-Prompt → &lt;weak_areas&gt; aus quiz_log.md + feynman_log.md → &lt;exam_format&gt; kursgenau ausfüllen → Modul-Folien + Master-Glossar attachen. Output: <strong>_modul/problem_sets/set_01_[modul].md</strong></div>
-      </div>
-      <div class="step-meta"><span class="tag tag-a">Claude</span><span class="time">15 min</span></div>
-    </div>
-
-    <div class="step">
-      <div class="step-num">17</div>
-      <div class="step-body">
-        <div class="step-title">Problem-Set unter Klausurbedingungen</div>
-        <div class="step-desc">Timer setzen. Keine Folien, kein Glossar, keine Claude-Session. Antworten schriftlich. Erst nach Abschluss aller Fragen Lösungen aufklappen.</div>
-      </div>
-      <div class="step-meta"><span class="tag tag-c">Solo</span><span class="time">30–45 min</span></div>
-    </div>
-
-    <div class="step">
-      <div class="step-num">18</div>
-      <div class="step-body">
-        <div class="step-title">Fehleranalyse laufen lassen</div>
-        <div class="step-desc">Claude: Meta → Fehleranalyse-Prompt → &lt;meine_fehler&gt; mit allen falschen Antworten → Modul-Folien attachen → senden. Output: diagnostizierte Muster + priorisierter Studienplan → <strong>_modul/fehler_analyse/analyse_[datum].md</strong></div>
-      </div>
-      <div class="step-meta"><span class="tag tag-a">Claude</span><span class="time">20–30 min</span></div>
-    </div>
-
-    <div class="step">
-      <div class="step-num">19</div>
-      <div class="step-body">
-        <div class="step-title">Gezieltes Nachlernen</div>
-        <div class="step-desc">Nur die diagnostizierten Lücken schließen — nicht das ganze Modul nochmal. Priorisierter Studienplan aus Schritt 18 abarbeiten. Persistentes Muster? → Zurück zu Schritt 11 (Feynman).</div>
-      </div>
-      <div class="step-meta"><span class="tag tag-c">Eigenarbeit</span><span class="time">15–30 min</span></div>
-    </div>
-
-  </div>
-
-  <!-- REPEAT -->
-  <div class="repeat-block">
-    <h3>Wiederholungs-Schleife · laufend</h3>
-    <div class="repeat-item"><strong>Alle 1–2 Wochen:</strong> neues Problem-Set zum Modul (Schritte 16–18 kompakt, ~1h). Prüfen ob diagnostizierte Muster verschwunden sind.</div>
-    <div class="repeat-item"><strong>Täglich / 2-tägig:</strong> 10 min Flashcards in NotebookLM oder Anki. Persistenter Fehler → Feynman-Check fokussiert auf dieses Muster.</div>
-  </div>
-
-  <!-- TIME SUMMARY -->
-  <div class="time-bar">
-    <div class="time-cell accent-a">
-      <div class="val">~45<span style="font-size:14px">min</span></div>
-      <div class="lbl">Session A</div>
-    </div>
-    <div class="time-cell accent-a">
-      <div class="val">~1<span style="font-size:14px">h</span></div>
-      <div class="lbl">Session B</div>
-    </div>
-    <div class="time-cell accent-a">
-      <div class="val">~30<span style="font-size:14px">min</span></div>
-      <div class="lbl">Session C</div>
-    </div>
-    <div class="time-cell accent-b">
-      <div class="val">~1.5<span style="font-size:14px">h</span></div>
-      <div class="lbl">Session D</div>
-    </div>
-    <div class="time-cell accent-b">
-      <div class="val">~1.5<span style="font-size:14px">h</span></div>
-      <div class="lbl">Session E</div>
-    </div>
-    <div class="time-cell accent-c">
-      <div class="val">~2.5<span style="font-size:14px">h</span></div>
-      <div class="lbl">Pro Lecture (A+B+C)</div>
-    </div>
-    <div class="time-cell accent-d">
-      <div class="val">~3–4<span style="font-size:14px">h</span></div>
-      <div class="lbl">Pro Modul (D+E)</div>
-    </div>
+  <!-- IV -->
+  <div class="phase"><span class="phase-name">IV. Retrieval</span><div class="phase-rule"></div></div>
+  <div class="steps">
+    <div class="step" data-id="10"><div class="step-n">10</div><div class="step-body"><div class="step-title">Quiz</div></div><div class="step-check"><div class="check-box"><svg width="8" height="6" viewBox="0 0 8 6" fill="none"><polyline points="1,3 3,5 7,1" stroke="#f5f2eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></div>
+    <div class="step" data-id="11"><div class="step-n">11</div><div class="step-body"><div class="step-title">Problem-Set</div></div><div class="step-check"><div class="check-box"><svg width="8" height="6" viewBox="0 0 8 6" fill="none"><polyline points="1,3 3,5 7,1" stroke="#f5f2eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></div>
   </div>
 
 </div>
+<script>
+  const TOTAL = 11;
+  const KEY = 'lecture-loop-v3';
+
+  function loadState() {
+    try { return JSON.parse(localStorage.getItem(KEY)) || {}; }
+    catch { return {}; }
+  }
+
+  function saveState(s) { localStorage.setItem(KEY, JSON.stringify(s)); }
+
+  function updateProgress(s) {
+    const done = Object.values(s).filter(Boolean).length;
+    document.getElementById('prog-count').textContent = done + ' / ' + TOTAL;
+    document.getElementById('prog-fill').style.width = (done / TOTAL * 100) + '%';
+  }
+
+  function applyState(s) {
+    document.querySelectorAll('.step').forEach(el => {
+      el.classList.toggle('done', !!s[el.dataset.id]);
+    });
+    updateProgress(s);
+  }
+
+  const state = loadState();
+  applyState(state);
+
+  document.querySelectorAll('.step').forEach(el => {
+    el.addEventListener('click', () => {
+      const id = el.dataset.id;
+      state[id] = !state[id];
+      el.classList.toggle('done', state[id]);
+      saveState(state);
+      updateProgress(state);
+    });
+  });
+
+  document.getElementById('reset-btn').addEventListener('click', () => {
+    Object.keys(state).forEach(k => delete state[k]);
+    saveState(state);
+    applyState(state);
+  });
+</script>
 </body>
 </html>
